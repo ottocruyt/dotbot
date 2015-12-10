@@ -14,6 +14,13 @@ void forward()
   rightServo.writeMicroseconds(1500-power);
 }
 
+void stop(int time = 200)
+{
+  leftServo.writeMicroseconds(1500);
+  rightServo.writeMicroseconds(1500);
+  delay(time);
+}
+
 void forwardTime(unsigned int time)
 {
   forward();
@@ -21,11 +28,7 @@ void forwardTime(unsigned int time)
   stop();
 }
 
-void stop()
-{
-  leftServo.writeMicroseconds(1500);
-  rightServo.writeMicroseconds(1500);
-}
+
 
 void turn(int direction, int time)
 {
