@@ -30,11 +30,11 @@ void forwardTime(unsigned int time)
 
 
 
-void turn(int direction, int time)
+void turn(int direction, int degrees)
 {
   leftServo.writeMicroseconds(1500+power*direction);
   rightServo.writeMicroseconds(1500+power*direction); 
-  delay(time);
+  delay(degrees*5);
   stop();
 }
 
@@ -43,8 +43,7 @@ void setup()
   leftServo.attach(6);
   rightServo.attach(5);
 
-  turn(LEFT,500);
-  turn(RIGHT,500);
+  turn(LEFT,90);
 }
 
 void loop()
