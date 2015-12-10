@@ -1,5 +1,8 @@
 #include <Servo.h>
 
+#define RIGHT 1
+#define LEFT -1
+
 Servo leftServo;
 Servo rightServo;
 
@@ -24,10 +27,10 @@ void stop()
   rightServo.writeMicroseconds(1500);
 }
 
-void turn(int time)
+void turn(int direction, int time)
 {
-  leftServo.writeMicroseconds(1500+power);
-  rightServo.writeMicroseconds(1500+power); 
+  leftServo.writeMicroseconds(1500+power*direction);
+  rightServo.writeMicroseconds(1500+power*direction); 
   delay(time);
   stop();
 }
@@ -37,7 +40,8 @@ void setup()
   leftServo.attach(6);
   rightServo.attach(5);
 
-  turn(500);
+  turn(LEFT,500);
+  turn(RIGHT,500);
 }
 
 void loop()
