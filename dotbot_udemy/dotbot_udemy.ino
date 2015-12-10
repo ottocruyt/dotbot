@@ -11,6 +11,13 @@ void forward()
   rightServo.writeMicroseconds(1500-power);
 }
 
+void forwardTime(unsigned int time)
+{
+  forward();
+  delay(time);
+  stop();
+}
+
 void stop()
 {
   leftServo.writeMicroseconds(1500);
@@ -21,9 +28,7 @@ void setup()
   leftServo.attach(6);
   rightServo.attach(5);
   
-  forward();
-  delay(1000);
-  stop();
+  forwardTime(2000);
 }
 
 void loop()
