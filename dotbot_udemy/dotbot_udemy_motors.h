@@ -9,7 +9,7 @@ private:
   Servo leftServo;
   Servo rightServo;
 
-  static const byte power = 100;
+  static const byte power = 500;
 
 public:
   void attach(byte leftMotor, byte rightMotor)
@@ -20,7 +20,7 @@ public:
   void forward()
   {
     leftServo.writeMicroseconds(1500+power);
-    rightServo.writeMicroseconds(1500-power);
+    rightServo.writeMicroseconds(1500-power*0.9250);
   }
 
   void stop(int time = 200)
@@ -41,7 +41,7 @@ public:
   {
     leftServo.writeMicroseconds(1500+power*direction);
     rightServo.writeMicroseconds(1500+power*direction); 
-    delay(degrees*5);
+    delay(degrees*5.15);
     stop();
   }
 };

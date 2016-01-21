@@ -5,12 +5,18 @@ DotBotMotors motors;
 void setup()
 {
 
-  motors.attach(6,5);
-  motors.turn(LEFT,90);
+  
 }
 
 void loop()
 {
+
+    motors.attach(6,5);
+    motors.turn(RIGHT, 360);
+    delay(1000);
+
+    
+    
 
 }
 
