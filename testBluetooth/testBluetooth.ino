@@ -1,10 +1,11 @@
 #include <Servo.h>  
-Servo myservo;  // create servo object to control a servo 
-int val;    // variable to read the value from the analog pin 
+Servo leftServo;  // create servo object to control a servo 
+Servo rightServo;
  
 void setup() 
 { 
-  myservo.attach(9);  // attaches the servo on pin 9 to the servo object 
+  leftServo.attach(6);  // attaches the servo on pin 9 to the servo object 
+  rightServo.attach(5);
   Serial.begin(9600);
 } 
  
@@ -12,17 +13,17 @@ void loop()
 { 
   
   bool msgReceived = false;
-  char msg[1];
+  char msg[2];
   while(!msgReceived)
   {
       while(Serial.available())
       {
-         Serial.readBytes(msg,1);
+         Serial.readBytes(msg,2);
          msgReceived = true;
       }
   }
   
-  val = msg[0];     // scale it to use it with the servo (value between 0 and 180) 
-  myservo.write(val);                  // sets the servo position according to the scaled value 
+  leftServo.writeMicroseconds(1500+msg[0]*5);     
+  rightServo.writeMicroseconds(1500-msg[1]*5*0.9250);
  
  } 
