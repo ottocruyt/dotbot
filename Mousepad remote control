@@ -10,7 +10,7 @@ Serial port;
 void setup()
 {
   size(200,200);
-  port = new Serial(this,Serial.list()[0],9600);
+  port = new Serial(this,Serial.list()[0],9600); //change 0 to 1,2,3,4,5 depending on which port the bluetooth module is connected to
 }
 
 void draw()
