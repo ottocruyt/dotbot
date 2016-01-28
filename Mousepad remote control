@@ -1,0 +1,59 @@
+import processing.serial.*;
+
+int x; //direction
+int y; //power
+int leftMotor;
+int rightMotor;
+byte[] msg = new byte[2];
+Serial port;
+
+void setup()
+{
+  size(200,200);
+  port = new Serial(this,Serial.list()[0],9600);
+}
+
+void draw()
+{
+  background(204);
+  
+  fill(0,102,153);
+  text("x :" + x,10,20);
+  text("y :" + y,10,40);
+  text("left: " + leftMotor,10,190);
+  text("right: " + rightMotor,130,190);
+  
+
+  line(0,100,200,100);
+  line(100,0,100,200);
+  line(100,0,0,100);
+  line(0,100,100,200);
+  line(100,200,200,100);
+  line(100,0,200,100);
+  
+  port.write(msg);
+}
+
+void mouseMoved()
+{
+  x=mouseX - 100;
+  y=100 - mouseY;
+  
+  leftMotor = coerce(y-x);
+  rightMotor = coerce(y+x);
+  
+  msg[0] = (byte)leftMotor;
+  msg[1] = (byte)rightMotor;
+}
+
+int coerce(int value)
+{
+  if(value>100)
+  value=100;
+  if(value<-100)
+  value=-100;
+  if(abs(value)<10)
+  value=0;
+  
+  return value;
+}
