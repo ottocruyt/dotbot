@@ -7,6 +7,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
+
 
 public class Main extends AppCompatActivity implements SensorEventListener {
 
@@ -40,6 +42,8 @@ public class Main extends AppCompatActivity implements SensorEventListener {
                 float x = sensorEvent.values[0];
                 float y = sensorEvent.values[1];
                 float z = sensorEvent.values[2];
+
+                refreshGUI(x,y,z);
             }
         }
     }
@@ -47,6 +51,16 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    public void refreshGUI(float x, float y, float z) {
+
+        TextView text = (TextView)findViewById(R.id.number_1);
+        text.setText("X_Accelerometer: "+x);
+        text = (TextView)findViewById(R.id.number_2);
+        text.setText("Y_Accelerometer: "+y);
+        text = (TextView)findViewById(R.id.number_3);
+        text.setText("Z_Accelerometer: "+z);
     }
 
     protected void onPause() {
