@@ -6,7 +6,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 
@@ -14,6 +17,9 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
+
+    private boolean startButtonPressed;
+    private boolean connectButtonPressed;
 
     private long lastUpdate = 0;
 
@@ -25,6 +31,9 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
+        startButtonPressed = false;
+        connectButtonPressed = false;
     }
 
     @Override
@@ -55,8 +64,17 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     }
 
     public int[] calculateArduinoInputs(float y, float z) {
-        int power = Math.round(z*10);
-        int steering = Math.round(y*5);
+        int power;
+        int steering;
+
+        if (startButtonPressed){
+            power = 0;
+            steering = 0;
+        }
+        else {
+            power = Math.round(z * 10);
+            steering = Math.round(y * 5);
+        }
 
         int motorLeft = power - steering;
         int motorRight = power + steering;
@@ -79,6 +97,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         if (Math.abs(motorRight) < 10) {
             motorRight = 0;
         }
+
         return new int[]{motorLeft, motorRight, power, steering};
     }
 
@@ -90,7 +109,41 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         text = (TextView)findViewById(R.id.number_3);
         text.setText("Power: "+power);
         text = (TextView)findViewById(R.id.number_4);
-        text.setText("Steering: "+steering);
+        text.setText("Steering: " + steering);
+    }
+
+    public void startButtonClick(View view) {
+
+        final Button startButton = (Button) findViewById(R.id.button);
+
+        if (startButtonPressed){
+            startButton.setText("Start");
+            startButton.setTextColor(ContextCompat.getColor(this,R.color.startColor));
+            startButtonPressed = false;
+        }
+        else{
+            startButton.setText("Stop");
+            startButton.setTextColor(ContextCompat.getColor(this,R.color.stopColor));
+            startButtonPressed = true;
+        }
+
+    }
+
+    public void connectButtonClick(View view) {
+
+        final Button connectButton = (Button) findViewById(R.id.button2);
+
+        if (connectButtonPressed){
+            connectButton.setText("Connect");
+            connectButton.setTextColor(ContextCompat.getColor(this,R.color.startColor));
+            connectButtonPressed = false;
+        }
+        else{
+            connectButton.setText("Disconnect");
+            connectButton.setTextColor(ContextCompat.getColor(this,R.color.stopColor));
+            connectButtonPressed = true;
+        }
+
     }
 
     protected void onPause() {
