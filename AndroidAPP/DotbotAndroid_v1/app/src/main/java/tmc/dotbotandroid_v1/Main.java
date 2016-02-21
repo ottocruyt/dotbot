@@ -64,17 +64,9 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     }
 
     public int[] calculateArduinoInputs(float y, float z) {
-        int power;
-        int steering;
 
-        if (startButtonPressed){
-            power = 0;
-            steering = 0;
-        }
-        else {
-            power = Math.round(z * 10);
-            steering = Math.round(y * 5);
-        }
+        int power = Math.round(z * 10);
+        int steering = Math.round(y * 5);
 
         int motorLeft = power - steering;
         int motorRight = power + steering;
@@ -96,6 +88,10 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         }
         if (Math.abs(motorRight) < 10) {
             motorRight = 0;
+        }
+        if (!startButtonPressed){
+            motorRight = 0;
+            motorLeft = 0;
         }
 
         return new int[]{motorLeft, motorRight, power, steering};
