@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import java.text.DecimalFormat;
 
 
 public class Main extends AppCompatActivity implements SensorEventListener {
@@ -99,13 +100,16 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
     public void refreshGUI(float motorLeft, float motorRight, float power, float steering) {
         TextView text = (TextView)findViewById(R.id.number_1);
-        text.setText("Motor Left: "+motorLeft);
+
+        //format to not show decimals
+        DecimalFormat nd = new DecimalFormat("###");
+        text.setText("Motor Left: " + nd.format(motorLeft));
         text = (TextView)findViewById(R.id.number_2);
-        text.setText("Motor Right: "+motorRight);
+        text.setText("Motor Right: " + nd.format(motorRight));
         text = (TextView)findViewById(R.id.number_3);
-        text.setText("Power: "+power);
+        text.setText("Power: " + nd.format(power));
         text = (TextView)findViewById(R.id.number_4);
-        text.setText("Steering: " + steering);
+        text.setText("Steering: " + nd.format(steering));
     }
 
     public void startButtonClick(View view) {
