@@ -107,9 +107,9 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         text = (TextView)findViewById(R.id.number_2);
         text.setText("Motor Right: " + nd.format(motorRight));
         text = (TextView)findViewById(R.id.number_3);
-        text.setText("Power: " + nd.format(power));
+        text.setText(nd.format(power));
         text = (TextView)findViewById(R.id.number_4);
-        text.setText("Steering: " + nd.format(steering));
+        text.setText(nd.format(steering));
     }
 
     public void startButtonClick(View view) {
