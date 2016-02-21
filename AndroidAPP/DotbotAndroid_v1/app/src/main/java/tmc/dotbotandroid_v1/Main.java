@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import java.text.DecimalFormat;
-
+import android.view.WindowManager;
 
 public class Main extends AppCompatActivity implements SensorEventListener {
 
@@ -28,7 +28,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); //keep the screen on while in the app
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
