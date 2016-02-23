@@ -118,12 +118,15 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
         if (startButtonPressed){
             startButton.setText("Start");
-            startButton.setTextColor(ContextCompat.getColor(this,R.color.startColor));
+            startButton.setTextColor(ContextCompat.getColor(this, R.color.startColor));
+            startButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_start, 0, 0, 0);
             startButtonPressed = false;
         }
         else{
             startButton.setText("Stop");
-            startButton.setTextColor(ContextCompat.getColor(this,R.color.stopColor));
+            startButton.setTextColor(ContextCompat.getColor(this, R.color.stopColor));
+            startButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_stop, 0, 0, 0);
+
             startButtonPressed = true;
         }
 
@@ -135,12 +138,10 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
         if (connectButtonPressed){
             connectButton.setText("Connect");
-            connectButton.setTextColor(ContextCompat.getColor(this,R.color.startColor));
             connectButtonPressed = false;
         }
         else{
             connectButton.setText("Disconnect");
-            connectButton.setTextColor(ContextCompat.getColor(this,R.color.stopColor));
             connectButtonPressed = true;
         }
 
