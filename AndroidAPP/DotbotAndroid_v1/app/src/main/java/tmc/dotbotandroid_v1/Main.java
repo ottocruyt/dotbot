@@ -1,6 +1,8 @@
 package tmc.dotbotandroid_v1;
 //test
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -42,6 +44,16 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         // Initialization of button flags
         startButtonPressed = false;
         connectButtonPressed = false;
+
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+        }
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, 1); //REQUEST_ENABLE_BT
+            //TODO: Add REQUEST_ENABLE_BT with onActivityResult(), see Android Developers
+        }
     }
 
     @Override
