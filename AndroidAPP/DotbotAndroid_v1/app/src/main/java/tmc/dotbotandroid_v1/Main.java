@@ -18,6 +18,9 @@ import android.view.WindowManager;
 
 public class Main extends AppCompatActivity implements SensorEventListener {
 
+    // Static variables
+    private final static int REQUEST_ENABLE_BT = 1;
+
     // Declaration sensor variables
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
@@ -45,15 +48,6 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         startButtonPressed = false;
         connectButtonPressed = false;
 
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null) {
-            // Device does not support Bluetooth
-        }
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, 1); //REQUEST_ENABLE_BT
-            //TODO: Add REQUEST_ENABLE_BT with onActivityResult(), see Android Developers
-        }
     }
 
     @Override
@@ -164,6 +158,15 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         else{
             connectButton.setText("Disconnect");
             connectButtonPressed = true;
+
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (mBluetoothAdapter == null) {
+                // Device does not support Bluetooth
+            }
+            if (!mBluetoothAdapter.isEnabled()) {
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            }
         }
 
     }
