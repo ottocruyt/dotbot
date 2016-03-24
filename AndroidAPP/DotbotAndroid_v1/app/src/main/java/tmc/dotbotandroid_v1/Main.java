@@ -1,6 +1,7 @@
 package tmc.dotbotandroid_v1;
 //test
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -11,9 +12,12 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import java.text.DecimalFormat;
+import java.util.Set;
+
 import android.view.WindowManager;
 
 public class Main extends AppCompatActivity implements SensorEventListener {
@@ -24,6 +28,9 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     // Declaration sensor variables
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
+
+    // Declaration bluetooth variables
+    private ArrayAdapter<String> mArrayAdapter;
 
     // Initialize variable to check when sensor inputs have to be updated
     private long lastUpdate = 0;
@@ -159,18 +166,30 @@ public class Main extends AppCompatActivity implements SensorEventListener {
             connectButton.setText("Disconnect");
             connectButtonPressed = true;
 
-            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (mBluetoothAdapter == null) {
-                // Device does not support Bluetooth
-            }
-            if (!mBluetoothAdapter.isEnabled()) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            }
+            startBluetooth();
         }
-
     }
 
+    public void startBluetooth() {
+
+        // Enable Bluetooth
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) { // Device does not support Bluetooth
+        }
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+
+        // Query paired devices
+        mArrayAdapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) { // Loop through paired devices
+                mArrayAdapter.add(device.getName() + "\n" + device.getAddress()); // Save the MAC adress and name of the Bluetooth device in an ArrayAdapter
+            }
+        }
+    }
     protected void onPause() {
         super.onPause();
         senSensorManager.unregisterListener(this);
