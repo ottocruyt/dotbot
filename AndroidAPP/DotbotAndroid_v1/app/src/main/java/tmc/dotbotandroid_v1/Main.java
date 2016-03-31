@@ -2,8 +2,10 @@ package tmc.dotbotandroid_v1;
 //test
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -30,6 +32,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     private Sensor senAccelerometer;
 
     // Declaration bluetooth variables
+    BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ArrayAdapter<String> mArrayAdapter;
 
     // Initialize variable to check when sensor inputs have to be updated
@@ -38,6 +41,8 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     // Flags that give information whether a button is pressed or not
     private boolean startButtonPressed;
     private boolean connectButtonPressed;
+
+
 
     @Override
     // This method is called when the app is started.
@@ -55,6 +60,12 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         startButtonPressed = false;
         connectButtonPressed = false;
 
+        //Register the BroadcastReceiver
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothDevice.ACTION_UUID);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
     }
 
     @Override
@@ -171,9 +182,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     }
 
     public void startBluetooth() {
-
         // Enable Bluetooth
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) { // Device does not support Bluetooth
         }
         if (!mBluetoothAdapter.isEnabled()) {
@@ -186,9 +195,20 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) { // Loop through paired devices
-                mArrayAdapter.add(device.getName() + "\n" + device.getAddress()); // Save the MAC adress and name of the Bluetooth device in an ArrayAdapter
+                mArrayAdapter.add(device.getName() + "\n" + device.getAddress()); // Save the MAC address and name of the Bluetooth device in an ArrayAdapter
             }
         }
+
+        // Discover new devices
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+
+        registerReceiver(mReceiver, filter);
+        mBluetoothAdapter.startDiscovery();
+
+
     }
     protected void onPause() {
         super.onPause();
@@ -199,4 +219,30 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         super.onResume();
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mBluetoothAdapter != null) {
+            mBluetoothAdapter.cancelDiscovery();
+        }
+        unregisterReceiver(mReceiver);
+    }
+    // Create a BroadcastReceiver for ACTION_FOUND
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                //discovery starts, we can show progress dialog or perform other tasks
+            }
+            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                //discovery finishes, dismis progress dialog
+                mBluetoothAdapter.cancelDiscovery();
+            }
+            else if (BluetoothDevice.ACTION_FOUND.equals(action)) { // When discovery finds a device
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE); // Get the BluetoothDevice object from the Intent
+                mArrayAdapter.add(device.getName() + "\n" + device.getAddress()); // Add the name and address to an array adapter to show in a ListView
+            }
+        }
+    };
 }
