@@ -236,8 +236,9 @@ public class Main extends AppCompatActivity implements SensorEventListener {
                 //discovery starts, we can show progress dialog or perform other tasks
             }
             else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                //discovery finishes, dismis progress dialog
+                //discovery finishes, dismiss progress dialog
                 mBluetoothAdapter.cancelDiscovery();
+
             }
             else if (BluetoothDevice.ACTION_FOUND.equals(action)) { // When discovery finds a device
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE); // Get the BluetoothDevice object from the Intent
