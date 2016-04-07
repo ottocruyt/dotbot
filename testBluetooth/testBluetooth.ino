@@ -18,7 +18,7 @@ void loop()
   {
       while(Serial.available())
       {
-         Serial.readBytes(msg,2);
+         Serial.readBytes(msg,2); //{command = ((byte)Serial.read());  source:http://www.instructables.com/id/Android-Bluetooth-Control-LED-Part-2/step8/Aruino-Code/
          msgReceived = true;
       }
   }
