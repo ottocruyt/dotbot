@@ -16,9 +16,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import java.text.DecimalFormat;
 import java.util.Set;
+import java.util.UUID;
 
 import android.view.WindowManager;
 
@@ -34,6 +36,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     // Declaration bluetooth variables
     BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ArrayAdapter<String> mArrayAdapter;
+    static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     // Initialize variable to check when sensor inputs have to be updated
     private long lastUpdate = 0;
@@ -41,6 +44,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     // Flags that give information whether a button is pressed or not
     private boolean startButtonPressed;
     private boolean connectButtonPressed;
+    private boolean discoveryFinished;
 
 
 
@@ -205,9 +209,26 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
+        discoveryFinished = false;
         registerReceiver(mReceiver, filter);
         mBluetoothAdapter.startDiscovery();
 
+        while(mBluetoothAdapter.isDiscovering()){
+
+        }
+
+
+        if (discoveryFinished) {
+            int a = 1;
+        }
+            /*ListView deviceListView = (ListView) findViewById(R.id.lvItems); // listview is used to make user select correct BT device
+            deviceListView.setAdapter(mArrayAdapter);
+            :todo check if discoveryFinished flag works for sequencing
+            :todo make listview display the list of arrayadapter
+            :todo make listview pop up in seperate window
+            :todo be able to clock item in listview and store in device (needs onclicklistener?)
+        }
+*/
 
     }
     protected void onPause() {
@@ -238,7 +259,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
             else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 //discovery finishes, dismiss progress dialog
                 mBluetoothAdapter.cancelDiscovery();
-
+                discoveryFinished = true;
             }
             else if (BluetoothDevice.ACTION_FOUND.equals(action)) { // When discovery finds a device
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE); // Get the BluetoothDevice object from the Intent
