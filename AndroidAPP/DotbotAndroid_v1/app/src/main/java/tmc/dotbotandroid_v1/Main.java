@@ -213,13 +213,13 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         registerReceiver(mReceiver, filter);
         mBluetoothAdapter.startDiscovery();
 
+
         while(mBluetoothAdapter.isDiscovering()){
 
         }
 
 
-        if (discoveryFinished) {
-            int a = 1;
+
         }
             /*ListView deviceListView = (ListView) findViewById(R.id.lvItems); // listview is used to make user select correct BT device
             deviceListView.setAdapter(mArrayAdapter);
@@ -259,7 +259,6 @@ public class Main extends AppCompatActivity implements SensorEventListener {
             else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 //discovery finishes, dismiss progress dialog
                 mBluetoothAdapter.cancelDiscovery();
-                discoveryFinished = true;
             }
             else if (BluetoothDevice.ACTION_FOUND.equals(action)) { // When discovery finds a device
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE); // Get the BluetoothDevice object from the Intent
