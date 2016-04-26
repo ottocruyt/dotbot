@@ -42,6 +42,11 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ArrayAdapter<String> mArrayAdapter;
     static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private boolean bluetoothIsConnected; // flag to determine if the bluetooth connection is made, so the sensordata can be send.
+    private OutputStream mOutput = null;
+    private BluetoothSocket mSocket = null;
+
+
 
     // Initialize variable to check when sensor inputs have to be updated
     private long lastUpdate = 0;
@@ -64,9 +69,10 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
-        // Initialization of button flags
+        // Initialization flags
         startButtonPressed = false;
         connectButtonPressed = false;
+        bluetoothIsConnected = false;
 
         //Register the BroadcastReceiver
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -97,6 +103,10 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
                 // The new values need to be displayed in the GUI
                 refreshGUI(result[0], result[1], result [2], result [3]);
+
+                if (bluetoothIsConnected){
+                    sendData(result[0], result[1], result [2], result [3]);
+                }
             }
         }
     }
@@ -180,6 +190,8 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         if (connectButtonPressed){
             connectButton.setText("Connect");
             connectButtonPressed = false;
+
+            closeBluetooth();
         }
         else{
             connectButton.setText("Disconnect");
@@ -199,7 +211,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         }
 
         // Query paired devices
-        mArrayAdapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        mArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) { // Loop through paired devices
@@ -217,13 +229,12 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         mBluetoothAdapter.startDiscovery(); // Starts the discovery process
 
         // Loop which makes sure the code will only continue once the discovery process is finished
-        while(mBluetoothAdapter.isDiscovering()){
+        while (mBluetoothAdapter.isDiscovering()) {
 
         }
 
         // Creation of Bluetooth device
         BluetoothDevice mDevice = mBluetoothAdapter.getRemoteDevice("98:D3:31:90:3E:D7");
-        BluetoothSocket mSocket = null;
         try {
             mSocket = mDevice.createRfcommSocketToServiceRecord(myUUID); //create a RFCOMM (SPP) connection
         } catch (IOException e) {
@@ -249,14 +260,25 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         //The work to manage the connection has to be done in a seperate thread
         //Read and write functions are blocking calls
         //todo: create seperate thread to manage connection
+        //todo: connection does not always work from the first time. Figure out why
 
-        OutputStream mOutput = null;
+        bluetoothIsConnected = true;
+
         try {
             mOutput = mSocket.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public void closeBluetooth() {
+        try {
+            mSocket.close();
+        } catch (IOException e) { }
+        bluetoothIsConnected = false;
 
+    }
+
+    public void sendData(float motorLeft, float motorRight, float power, float steering) {
 
         String message = "woop";
         byte[] msgBytes = message.getBytes();
