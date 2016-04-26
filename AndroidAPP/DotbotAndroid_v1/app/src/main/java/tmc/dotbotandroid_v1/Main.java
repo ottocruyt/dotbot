@@ -2,6 +2,7 @@ package tmc.dotbotandroid_v1;
 //test
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.Set;
 import java.util.UUID;
@@ -44,7 +49,6 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     // Flags that give information whether a button is pressed or not
     private boolean startButtonPressed;
     private boolean connectButtonPressed;
-    private boolean discoveryFinished;
 
 
 
@@ -209,28 +213,72 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
-        discoveryFinished = false;
         registerReceiver(mReceiver, filter);
-        mBluetoothAdapter.startDiscovery();
+        mBluetoothAdapter.startDiscovery(); // Starts the discovery process
 
-
+        // Loop which makes sure the code will only continue once the discovery process is finished
         while(mBluetoothAdapter.isDiscovering()){
 
         }
 
-
-
+        // Creation of Bluetooth device
+        BluetoothDevice mDevice = mBluetoothAdapter.getRemoteDevice("98:D3:31:90:3E:D7");
+        BluetoothSocket mSocket = null;
+        try {
+            mSocket = mDevice.createRfcommSocketToServiceRecord(myUUID); //create a RFCOMM (SPP) connection
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        // Performing the connect function to make a connection
+        // Make sure the discovery is cancelled
+        mBluetoothAdapter.cancelDiscovery();
+        //todo: Make the connect in a seperate thread (adviced by Android page) because it is a blocking call
+        try {
+            // Connect the device through the socket. This will block
+            // until it succeeds or throws an exception
+            mSocket.connect();
+        } catch (IOException connectException) {
+            // Unable to connect due to faillure or timeout; close the socket and get out
+            try {
+                mSocket.close();
+            } catch (IOException closeException) {
+            }
+            return;
+        }
+        //The work to manage the connection has to be done in a seperate thread
+        //Read and write functions are blocking calls
+        //todo: create seperate thread to manage connection
+
+        OutputStream mOutput = null;
+        try {
+            mOutput = mSocket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        String message = "woop";
+        byte[] msgBytes = message.getBytes();
+        try {
+            mOutput.write(msgBytes);
+        } catch (IOException e) { }
+    }
+    //Code for closing the connection
+        /*
+        try {
+            mSocket.close();
+        } catch (IOException e) { }
+*/
             /*ListView deviceListView = (ListView) findViewById(R.id.lvItems); // listview is used to make user select correct BT device
             deviceListView.setAdapter(mArrayAdapter);
-            :todo check if discoveryFinished flag works for sequencing
             :todo make listview display the list of arrayadapter
             :todo make listview pop up in seperate window
-            :todo be able to clock item in listview and store in device (needs onclicklistener?)
+            :todo be able to click item in listview and store in device (needs onclicklistener?)
         }
 */
 
-    }
+
     protected void onPause() {
         super.onPause();
         senSensorManager.unregisterListener(this);
@@ -249,7 +297,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         }
         unregisterReceiver(mReceiver);
     }
-    // Create a BroadcastReceiver for ACTION_FOUND
+    // Create a BroadcastReceiver for ACTION_FOUND and specify which task to perform, based on received message
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
