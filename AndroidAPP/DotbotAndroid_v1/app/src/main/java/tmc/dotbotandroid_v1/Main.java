@@ -1,5 +1,5 @@
 package tmc.dotbotandroid_v1;
-//test
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -17,11 +17,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.Set;
@@ -43,10 +41,8 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     private ArrayAdapter<String> mArrayAdapter;
     static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private boolean bluetoothIsConnected; // flag to determine if the bluetooth connection is made, so the sensordata can be send.
-    private OutputStream mOutput = null;
-    private BluetoothSocket mSocket = null;
-
-
+    private OutputStream mOutput = null; // Outputstream object to be able to send data to arduino
+    private BluetoothSocket mSocket = null; // Socket object to be able to send data to arduino
 
     // Initialize variable to check when sensor inputs have to be updated
     private long lastUpdate = 0;
@@ -54,8 +50,6 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     // Flags that give information whether a button is pressed or not
     private boolean startButtonPressed;
     private boolean connectButtonPressed;
-
-
 
     @Override
     // This method is called when the app is started.
@@ -105,7 +99,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
                 refreshGUI(result[0], result[1], result [2], result [3]);
 
                 if (bluetoothIsConnected){
-                    sendData(result[0], result[1], result [2], result [3]);
+                    sendData(result[0], result[1]);
                 }
             }
         }
@@ -113,7 +107,6 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 
     // Calculates the Arduino inputs based on the accelerometer sensor values
@@ -121,8 +114,8 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
         int power = Math.round(z * 10);
         int steering = Math.round(y * 5);
-        int motorLeft = power - steering;
-        int motorRight = power + steering;
+        int motorLeft = power + steering;
+        int motorRight = power - steering;
 
         // Limitation to minimum and maximum values for servo motors
         if (motorLeft < -100){motorLeft = -100;}
@@ -202,6 +195,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
     }
 
     public void startBluetooth() {
+
         // Enable Bluetooth
         if (mBluetoothAdapter == null) { // Device does not support Bluetooth
         }
@@ -230,7 +224,6 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
         // Loop which makes sure the code will only continue once the discovery process is finished
         while (mBluetoothAdapter.isDiscovering()) {
-
         }
 
         // Creation of Bluetooth device
@@ -261,6 +254,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         //Read and write functions are blocking calls
         //todo: create seperate thread to manage connection
         //todo: connection does not always work from the first time. Figure out why
+        //todo: connection drops when only working on battery. Figure out why
 
         bluetoothIsConnected = true;
 
@@ -278,14 +272,19 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
     }
 
-    public void sendData(float motorLeft, float motorRight, float power, float steering) {
+    public void sendData(int motorLeft, int motorRight) {
 
-        String message = "woop";
-        byte[] msgBytes = message.getBytes();
+        // Convert the integer to a byte. All integers "fit" in one byte, so no byte arrays is necessary per integer, since integers go from -100 to 100 and byte from -128 to 127
+        byte[] msgBytes = new byte[2];
+        msgBytes[0] = (byte)motorLeft;
+        //msgBytes[1] = (byte)motorRight;
+        msgBytes[1] = (byte)motorRight;
+        
         try {
             mOutput.write(msgBytes);
         } catch (IOException e) { }
     }
+
     //Code for closing the connection
         /*
         try {
@@ -299,7 +298,6 @@ public class Main extends AppCompatActivity implements SensorEventListener {
             :todo be able to click item in listview and store in device (needs onclicklistener?)
         }
 */
-
 
     protected void onPause() {
         super.onPause();
