@@ -16,6 +16,18 @@ class DotbotSensors
     int leftReflected;
     int frontReflected;
     int rightReflected;
+
+    int leftTotal;
+    int frontTotal;
+    int rightTotal;
+    static const byte numReadings = 20;
+    byte index;
+    int leftReadings[numReadings];
+    int frontReadings[numReadings];
+    int rightReadings[numReadings];
+    int leftSmoothed;
+    int frontSmoothed;
+    int rightSmoothed;
   
   public:
   void configure()
@@ -46,18 +58,34 @@ class DotbotSensors
     leftReflected = leftCombined - leftAmbient;
     frontReflected = frontCombined - frontAmbient;
     rightReflected = rightCombined - rightAmbient;
+
+    leftTotal -= leftReadings[index];
+    leftReadings[index] = leftReflected;
+    leftTotal += leftReadings[index];
+    frontTotal -= frontReadings[index];
+    frontReadings[index] = frontReflected;
+    frontTotal += frontReadings[index];
+    rightTotal -= rightReadings[index];
+    rightReadings[index] = rightReflected;
+    rightTotal += rightReadings[index];
+    index += 1;
+
+    if(index >= numReadings)
+    {
+      index = 0;
+    }
+
+    leftSmoothed = leftTotal/numReadings;
+    frontSmoothed = frontTotal/numReadings;
+    rightSmoothed = rightTotal/numReadings;    
   }
   
   void view()
   {
-    Serial.print(leftReflected);
+    Serial.print(leftSmoothed);
     Serial.print("\t");
-    Serial.print(leftCombined);
-    Serial.print("\t");
-    Serial.print(leftAmbient);
-    Serial.print("\t /");
-    Serial.print(frontReflected);
+    Serial.print(frontSmoothed);
     Serial.print("\t"); 
-    Serial.println(rightReflected); 
+    Serial.println(rightSmoothed); 
   }
 };

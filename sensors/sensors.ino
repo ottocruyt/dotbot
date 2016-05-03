@@ -28,7 +28,7 @@ while(digitalRead(buttonPin))
 void loop()
 {
   sensors.sense();
+
   sensors.view();
-  delay(100);
 }
 
