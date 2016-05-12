@@ -1,15 +1,15 @@
 #include <Arduino.h>
 #include <Servo.h>
 
-#define RIGHT 1
-#define LEFT -1
+#define RIGHT -1
+#define LEFT 1
 
 class DotBotMotors{
 private:
   Servo leftServo;
   Servo rightServo;
 
-  static const byte power = 100;
+  static const byte power = 500;
 
 public:
   void attach(byte leftMotor, byte rightMotor)
@@ -19,8 +19,8 @@ public:
   }
   void forward()
   {
-    leftServo.writeMicroseconds(1500+power);
-    rightServo.writeMicroseconds(1500-power);
+    leftServo.writeMicroseconds(1500-power);
+    rightServo.writeMicroseconds(1500+power);
   }
 
   void stop(int time = 200)

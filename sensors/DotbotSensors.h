@@ -28,64 +28,81 @@ class DotbotSensors
     int leftSmoothed;
     int frontSmoothed;
     int rightSmoothed;
-  
+
   public:
-  void configure()
-  {
-    pinMode(leftEmitter,OUTPUT);
-    pinMode(frontEmitter,OUTPUT);
-    pinMode(rightEmitter,OUTPUT);
-  }
 
-  void sense()
-  {
-    digitalWrite(leftEmitter,HIGH);
-    digitalWrite(frontEmitter,HIGH);
-    digitalWrite(rightEmitter,HIGH);
-    delay(1);
-    leftCombined = analogRead(leftDetector);
-    frontCombined = analogRead(frontDetector);
-    rightCombined = analogRead(rightDetector);
-    //delay(1);
-    digitalWrite(leftEmitter,LOW);
-    digitalWrite(frontEmitter,LOW);
-    digitalWrite(rightEmitter,LOW);
-    delay(1);
-    leftAmbient = analogRead(leftDetector);
-    frontAmbient = analogRead(frontDetector);
-    rightAmbient = analogRead(rightDetector);
-    
-    leftReflected = leftCombined - leftAmbient;
-    frontReflected = frontCombined - frontAmbient;
-    rightReflected = rightCombined - rightAmbient;
+    int front;
+    int left;
+    int right;
 
-    leftTotal -= leftReadings[index];
-    leftReadings[index] = leftReflected;
-    leftTotal += leftReadings[index];
-    frontTotal -= frontReadings[index];
-    frontReadings[index] = frontReflected;
-    frontTotal += frontReadings[index];
-    rightTotal -= rightReadings[index];
-    rightReadings[index] = rightReflected;
-    rightTotal += rightReadings[index];
-    index += 1;
-
-    if(index >= numReadings)
+    void configure()
     {
-      index = 0;
+      pinMode(leftEmitter, OUTPUT);
+      pinMode(frontEmitter, OUTPUT);
+      pinMode(rightEmitter, OUTPUT);
     }
 
-    leftSmoothed = leftTotal/numReadings;
-    frontSmoothed = frontTotal/numReadings;
-    rightSmoothed = rightTotal/numReadings;    
-  }
-  
-  void view()
-  {
-    Serial.print(leftSmoothed);
-    Serial.print("\t");
-    Serial.print(frontSmoothed);
-    Serial.print("\t"); 
-    Serial.println(rightSmoothed); 
-  }
+    void sense()
+    {
+      digitalWrite(leftEmitter, HIGH);
+      digitalWrite(frontEmitter, HIGH);
+      digitalWrite(rightEmitter, HIGH);
+      delay(1);
+      leftCombined = analogRead(leftDetector);
+      frontCombined = analogRead(frontDetector);
+      rightCombined = analogRead(rightDetector);
+      //delay(1);
+      digitalWrite(leftEmitter, LOW);
+      digitalWrite(frontEmitter, LOW);
+      digitalWrite(rightEmitter, LOW);
+      delay(1);
+      leftAmbient = analogRead(leftDetector);
+      frontAmbient = analogRead(frontDetector);
+      rightAmbient = analogRead(rightDetector);
+
+      leftReflected = leftCombined - leftAmbient;
+      frontReflected = frontCombined - frontAmbient;
+      rightReflected = rightCombined - rightAmbient;
+
+      leftTotal -= leftReadings[index];
+      leftReadings[index] = leftReflected;
+      leftTotal += leftReadings[index];
+      frontTotal -= frontReadings[index];
+      frontReadings[index] = frontReflected;
+      frontTotal += frontReadings[index];
+      rightTotal -= rightReadings[index];
+      rightReadings[index] = rightReflected;
+      rightTotal += rightReadings[index];
+      index += 1;
+
+      if (index >= numReadings)
+      {
+        index = 0;
+      }
+
+      leftSmoothed = leftTotal / numReadings;
+      frontSmoothed = frontTotal / numReadings;
+      rightSmoothed = rightTotal / numReadings;
+
+      left = leftSmoothed;
+      front = frontSmoothed;
+      right = rightSmoothed;
+    }
+
+    void view()
+    {
+      Serial.print(left);
+      Serial.print("\t");
+      Serial.print(front);
+      Serial.print("\t");
+      Serial.println(right);
+    }
+
+    void initialize()
+    {
+      for (byte i = 0 ; i < numReadings ; i++)
+      {
+        sense();
+      }
+    }
 };
