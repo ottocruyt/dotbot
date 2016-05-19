@@ -100,6 +100,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
                 if (bluetoothIsConnected){
                     sendData(result[0], result[1]);
+
                 }
             }
         }
@@ -132,7 +133,6 @@ public class Main extends AppCompatActivity implements SensorEventListener {
             motorRight = 0;
             motorLeft = 0;
         }
-
         return new int[]{motorLeft, motorRight, power, steering};
     }
 
@@ -171,7 +171,6 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
             startButtonPressed = true;
         }
-
     }
     // This function is called when the connect button is clicked
     public void connectButtonClick(View view) {
@@ -183,13 +182,11 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         if (connectButtonPressed){
             connectButton.setText("Connect");
             connectButtonPressed = false;
-
             closeBluetooth();
         }
         else{
             connectButton.setText("Disconnect");
             connectButtonPressed = true;
-
             startBluetooth();
         }
     }
@@ -228,6 +225,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
         // Creation of Bluetooth device
         BluetoothDevice mDevice = mBluetoothAdapter.getRemoteDevice("98:D3:31:90:3E:D7");
+        //todo: implement way to see a list of possible bluetooth devices and pick the correct one (arrayadapter?)
         try {
             mSocket = mDevice.createRfcommSocketToServiceRecord(myUUID); //create a RFCOMM (SPP) connection
         } catch (IOException e) {
@@ -253,8 +251,6 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         //The work to manage the connection has to be done in a seperate thread
         //Read and write functions are blocking calls
         //todo: create seperate thread to manage connection
-        //todo: connection does not always work from the first time. Figure out why
-        //todo: connection drops when only working on battery. Figure out why
 
         bluetoothIsConnected = true;
 
@@ -279,25 +275,13 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         msgBytes[0] = (byte)motorLeft;
         //msgBytes[1] = (byte)motorRight;
         msgBytes[1] = (byte)motorRight;
-        
+
         try {
             mOutput.write(msgBytes);
         } catch (IOException e) { }
     }
 
-    //Code for closing the connection
-        /*
-        try {
-            mSocket.close();
-        } catch (IOException e) { }
-*/
-            /*ListView deviceListView = (ListView) findViewById(R.id.lvItems); // listview is used to make user select correct BT device
-            deviceListView.setAdapter(mArrayAdapter);
-            :todo make listview display the list of arrayadapter
-            :todo make listview pop up in seperate window
-            :todo be able to click item in listview and store in device (needs onclicklistener?)
-        }
-*/
+
 
     protected void onPause() {
         super.onPause();
@@ -334,4 +318,5 @@ public class Main extends AppCompatActivity implements SensorEventListener {
             }
         }
     };
+    //todo: check where error handling is necessary.
 }

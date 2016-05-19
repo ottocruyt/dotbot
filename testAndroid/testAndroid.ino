@@ -23,8 +23,7 @@ void loop()
 
       }
   }
-  
-  
+    
   // convert unsigned byte to signed integer
   int LeftMotor = msg[0];
   int RightMotor = msg[1];
