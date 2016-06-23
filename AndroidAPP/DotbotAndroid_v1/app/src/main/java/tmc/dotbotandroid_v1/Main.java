@@ -27,91 +27,96 @@ import java.util.UUID;
 
 import android.view.WindowManager;
 
-public class Main extends AppCompatActivity implements SensorEventListener {
+public class Main extends AppCompatActivity {    //extends: main or gui, implements: controller
 
     // Static variables
-    private final static int REQUEST_ENABLE_BT = 1;
+ //   private final static int REQUEST_ENABLE_BT = 1;    // Declaration sensor variables
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Controller mController = new Controller(this);
+        GUI mGui = new GUI();
+        Intent intent = new Intent(this, GUI.class);
+        startActivity(intent);
 
-    // Declaration sensor variables
-    private SensorManager senSensorManager;
-    private Sensor senAccelerometer;
+
+    }
+
+    protected void onPause() {
+        super.onPause();
+        //senSensorManager.unregisterListener(this); //controller or main?
+    }
+
+    protected void onResume() { //controller or main?
+        super.onResume();
+        // senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+  /*      if (mBluetoothAdapter != null) {
+            mBluetoothAdapter.cancelDiscovery();
+        }
+        unregisterReceiver(mReceiver);
+   */ }
+    // Create a BroadcastReceiver for ACTION_FOUND and specify which task to perform, based on received message
+  /*  private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                //discovery starts, we can show progress dialog or perform other tasks
+            }
+            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                //discovery finishes, dismiss progress dialog
+                mBluetoothAdapter.cancelDiscovery();
+            }
+            else if (BluetoothDevice.ACTION_FOUND.equals(action)) { // When discovery finds a device
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE); // Get the BluetoothDevice object from the Intent
+                mArrayAdapter.add(device.getName() + "\n" + device.getAddress()); // Add the name and address to an array adapter to show in a ListView
+            }
+        }
+    };*/
+    //todo: check where error handling is necessary.
 
     // Declaration bluetooth variables
-    BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+ /*   BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ArrayAdapter<String> mArrayAdapter;
     static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private boolean bluetoothIsConnected; // flag to determine if the bluetooth connection is made, so the sensordata can be send.
     private OutputStream mOutput = null; // Outputstream object to be able to send data to arduino
     private BluetoothSocket mSocket = null; // Socket object to be able to send data to arduino
-
+*/
     // Initialize variable to check when sensor inputs have to be updated
-    private long lastUpdate = 0;
 
     // Flags that give information whether a button is pressed or not
-    private boolean startButtonPressed;
+ /*   private boolean startButtonPressed;
     private boolean connectButtonPressed;
+*/
 
-    @Override
     // This method is called when the app is started.
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); // Functionality that keeps the screen on while being in the app
 
         // Creation of sensor variables: a listener is created to keep track when the sensor values change
-        senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
         // Initialization flags
-        startButtonPressed = false;
+     /*   startButtonPressed = false;
         connectButtonPressed = false;
         bluetoothIsConnected = false;
-
+*/
         //Register the BroadcastReceiver
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+/*        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothDevice.ACTION_UUID);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
-    }
+   }*/
 
-    @Override
-    // This method is called every time the sensor values change
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        Sensor mySensor = sensorEvent.sensor;
 
-        if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 
-            // Call the current time so the sensor values are only updated after 100 ms.
-            long curTime = System.currentTimeMillis();
-            if ((curTime - lastUpdate) > 100) {
-                lastUpdate = curTime;
-                float x = sensorEvent.values[0];
-                float y = sensorEvent.values[1];
-                float z = sensorEvent.values[2];
 
-                // Only the y- and z-axis are used to control the dotbot
-                // Once the new values are known, the Arduino input values need to be calculated
-                int result[] = calculateArduinoInputs(y,z);
-
-                // The new values need to be displayed in the GUI
-                refreshGUI(result[0], result[1], result [2], result [3]);
-
-                if (bluetoothIsConnected){
-                    sendData(result[0], result[1]);
-
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-    }
 
     // Calculates the Arduino inputs based on the accelerometer sensor values
-    public int[] calculateArduinoInputs(float y, float z) {
+    /*public int[] calculateArduinoInputs(float y, float z) { //calculator
 
         int power = Math.round(z * 10);
         int steering = Math.round(y * 5);
@@ -129,15 +134,15 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         if (Math.abs(motorRight) < 10) {motorRight = 0;}
 
         // Stop button functionality: the values are zero when the start button is not pressed
-        if (!startButtonPressed){
-            motorRight = 0;
-            motorLeft = 0;
-        }
+      //  if (!startButtonPressed){
+        //    motorRight = 0;
+         //   motorLeft = 0;
+       // }
         return new int[]{motorLeft, motorRight, power, steering};
-    }
+    }*/
 
     // Refreshes the values that are displayed on the GUI screen
-    public void refreshGUI(float motorLeft, float motorRight, float power, float steering) {
+   /* public void refreshGUI(float motorLeft, float motorRight, float power, float steering) { //gui
         TextView text = (TextView)findViewById(R.id.number_1);
 
         // Format so decimals are not shown
@@ -149,10 +154,10 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         text.setText(nd.format(power));
         text = (TextView)findViewById(R.id.number_4);
         text.setText(nd.format(steering));
-    }
+    }*/
 
     // This function is called when the start button is clicked
-    public void startButtonClick(View view) {
+  /*  public void startButtonClick(View view) {
 
         // Button object initialization
         final Button startButton = (Button) findViewById(R.id.button);
@@ -171,9 +176,9 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
             startButtonPressed = true;
         }
-    }
+    }*/
     // This function is called when the connect button is clicked
-    public void connectButtonClick(View view) {
+   /* public void connectButtonClick(View view) {
 
         // Button object initialization
         final Button connectButton = (Button) findViewById(R.id.button2);
@@ -190,8 +195,8 @@ public class Main extends AppCompatActivity implements SensorEventListener {
             startBluetooth();
         }
     }
-
-    public void startBluetooth() {
+*/
+  /*  public void startBluetooth() {
 
         // Enable Bluetooth
         if (mBluetoothAdapter == null) { // Device does not support Bluetooth
@@ -267,8 +272,8 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         bluetoothIsConnected = false;
 
     }
-
-    public void sendData(int motorLeft, int motorRight) {
+*/
+  /*  public void sendData(int motorLeft, int motorRight) {
 
         // Convert the integer to a byte. All integers "fit" in one byte, so no byte arrays is necessary per integer, since integers go from -100 to 100 and byte from -128 to 127
         byte[] msgBytes = new byte[2];
@@ -281,42 +286,7 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         } catch (IOException e) { }
     }
 
+*/
 
 
-    protected void onPause() {
-        super.onPause();
-        senSensorManager.unregisterListener(this);
-    }
-
-    protected void onResume() {
-        super.onResume();
-        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mBluetoothAdapter != null) {
-            mBluetoothAdapter.cancelDiscovery();
-        }
-        unregisterReceiver(mReceiver);
-    }
-    // Create a BroadcastReceiver for ACTION_FOUND and specify which task to perform, based on received message
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                //discovery starts, we can show progress dialog or perform other tasks
-            }
-            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                //discovery finishes, dismiss progress dialog
-                mBluetoothAdapter.cancelDiscovery();
-            }
-            else if (BluetoothDevice.ACTION_FOUND.equals(action)) { // When discovery finds a device
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE); // Get the BluetoothDevice object from the Intent
-                mArrayAdapter.add(device.getName() + "\n" + device.getAddress()); // Add the name and address to an array adapter to show in a ListView
-            }
-        }
-    };
-    //todo: check where error handling is necessary.
 }
