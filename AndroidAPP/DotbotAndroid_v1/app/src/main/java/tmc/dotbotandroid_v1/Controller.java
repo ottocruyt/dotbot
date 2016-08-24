@@ -13,7 +13,7 @@ public class Controller extends Thread implements SensorEventListener  {
 
     private Context mContext;
     private Calculator mCalculator;
-    private Cache mCache;
+    public Cache mCache;
     private SensorManager senSensorManager; //controller
     private Sensor senAccelerometer;//controller
     private long lastUpdate = 0; //controller
@@ -48,7 +48,11 @@ public class Controller extends Thread implements SensorEventListener  {
 
                 // Only the y- and z-axis are used to control the dotbot
                 // Once the new values are known, the Arduino input values need to be calculated
-                mCache.motorInput = mCalculator.calculateMotorInputs(y,z);
+                int[] motorInputs = mCalculator.calculateMotorInputs(y,z,mCache.startButtonPressed);
+                mCache.motorLeft = motorInputs[0];
+                mCache.motorRight = motorInputs[1];
+                mCache.power = motorInputs[2];
+                mCache.steering = motorInputs[3];
 
                 int test = 0;
                 test = test + 1;
@@ -61,5 +65,13 @@ public class Controller extends Thread implements SensorEventListener  {
                 // }
             }
         }
+    }
+
+    public void Pause(){
+        senSensorManager.unregisterListener(this);
+    }
+
+    public void Resume(){
+        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 }

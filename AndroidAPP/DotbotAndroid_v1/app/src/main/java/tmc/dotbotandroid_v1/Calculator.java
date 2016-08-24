@@ -5,7 +5,7 @@ package tmc.dotbotandroid_v1;
  */
 public class Calculator {
 
-    public int[] calculateMotorInputs(float y_acceleration, float z_acceleration) { //calculator
+    public int[] calculateMotorInputs(float y_acceleration, float z_acceleration, boolean startButtonPressed) { //calculator
 
         int power = Math.round(z_acceleration * 10);
         int steering = Math.round(y_acceleration * 5);
@@ -22,11 +22,11 @@ public class Calculator {
         if (Math.abs(motorLeft) < 10) {motorLeft = 0;}
         if (Math.abs(motorRight) < 10) {motorRight = 0;}
 
-        // Stop button functionality: the values are zero when the start button is not pressed
-        //  if (!startButtonPressed){
-        //    motorRight = 0;
-        //   motorLeft = 0;
-        // }
+        //Stop button functionality: the values are zero when the start button is not pressed
+        if (!startButtonPressed){
+          motorRight = 0;
+          motorLeft = 0;
+        }
         return new int[]{motorLeft, motorRight, power, steering};
     }
 }
