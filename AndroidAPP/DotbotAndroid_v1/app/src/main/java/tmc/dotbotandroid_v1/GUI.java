@@ -165,24 +165,23 @@ public class GUI extends AppCompatActivity {
         }
     }
     // This function is called when the connect button is clicked
-   /* public void connectButtonClick(View view) {
+   public void connectButtonClick(View view) {
 
         // Button object initialization
-        final Button connectButton = (Button) findViewById(R.id.button2);
+        Button connectButton = (Button) findViewById(R.id.button2);
 
         // Change of appearance when the connect button is pressed
-        if (connectButtonPressed){
+        if (mController.mCache.connectButtonPressed){
             connectButton.setText("Connect");
-            connectButtonPressed = false;
-            closeBluetooth();
+            mController.mCache.connectButtonPressed = false;
+            //closeBluetooth();
         }
         else{
             connectButton.setText("Disconnect");
-            connectButtonPressed = true;
-            startBluetooth();
+            mController.mCache.connectButtonPressed = true;
+            //startBluetooth();
         }
     }
-*/
   /*  public void startBluetooth() {
 
         // Enable Bluetooth

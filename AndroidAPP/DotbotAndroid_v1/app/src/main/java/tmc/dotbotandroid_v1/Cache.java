@@ -10,5 +10,6 @@ public class Cache {
     public int steering;
 
     public boolean startButtonPressed;
+    public boolean connectButtonPressed;
 
 }
