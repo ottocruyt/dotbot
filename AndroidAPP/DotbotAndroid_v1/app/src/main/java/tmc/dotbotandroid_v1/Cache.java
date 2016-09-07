@@ -9,7 +9,7 @@ public class Cache {
     public int power;
     public int steering;
 
-    public boolean startButtonPressed;
-    public boolean connectButtonPressed;
+    public boolean startButtonPressed = false;
+    public boolean connectButtonPressed = false;
 
 }

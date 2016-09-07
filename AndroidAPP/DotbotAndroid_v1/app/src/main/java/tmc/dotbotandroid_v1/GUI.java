@@ -35,10 +35,6 @@ public class GUI extends AppCompatActivity {
     Controller mController;
     Handler mHandler;
 
-
-    private boolean connectButtonPressed;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,10 +122,9 @@ public class GUI extends AppCompatActivity {
     // This method is called when the app is started.
 
         // Initialization flags
-     /*   startButtonPressed = false;
-        connectButtonPressed = false;
-        bluetoothIsConnected = false;
-*/
+
+        //bluetoothIsConnected = false;
+
         //Register the BroadcastReceiver
 /*        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothDevice.ACTION_UUID);
