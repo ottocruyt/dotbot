@@ -14,6 +14,7 @@ public class Controller extends Thread implements SensorEventListener  {
     private Context mContext;
     private Calculator mCalculator;
     public Cache mCache;
+    public Bluetooth mBluetooth;
     private SensorManager senSensorManager; //controller
     private Sensor senAccelerometer;//controller
     private long lastUpdate = 0; //controller
@@ -22,6 +23,7 @@ public class Controller extends Thread implements SensorEventListener  {
         this.mContext = context;
         mCalculator = new Calculator();
         mCache = new Cache();
+        mBluetooth = new Bluetooth(mContext);
         senSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE); //controller
         senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); //controller
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL); //controller
@@ -54,8 +56,6 @@ public class Controller extends Thread implements SensorEventListener  {
                 mCache.power = motorInputs[2];
                 mCache.steering = motorInputs[3];
 
-                int test = 0;
-                test = test + 1;
                 // The new values need to be displayed in the GUI
                 //refreshGUI(result[0], result[1], result[2], result[3]);
 
@@ -65,6 +65,10 @@ public class Controller extends Thread implements SensorEventListener  {
                 // }
             }
         }
+    }
+
+    public Bluetooth.returnCodes enableBluetooth(){
+        return mBluetooth.isBluetoothEnabled();
     }
 
     public void Pause(){

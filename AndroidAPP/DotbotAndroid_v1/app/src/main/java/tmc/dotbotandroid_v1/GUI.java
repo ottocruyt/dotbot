@@ -34,6 +34,7 @@ public class GUI extends AppCompatActivity {
  //   private final static int REQUEST_ENABLE_BT = 1;    // Declaration sensor variables
     Controller mController;
     Handler mHandler;
+    private final static int REQUEST_ENABLE_BT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,7 @@ public class GUI extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //mController.Bluetooth.DestroyBluetooth
   /*      if (mBluetoothAdapter != null) {
             mBluetoothAdapter.cancelDiscovery();
         }
@@ -174,8 +176,30 @@ public class GUI extends AppCompatActivity {
         else{
             connectButton.setText("Disconnect");
             mController.mCache.connectButtonPressed = true;
-            //startBluetooth();
+
+
+            Bluetooth.returnCodes retVal = mController.enableBluetooth();
+
+            switch(retVal) {
+                case BLUETOOTH_ENABLED:
+                    break;
+                case BLUETOOTH_NOT_ENABLED:
+                    // ask user to enable bluetooth
+                    Intent enableBtIntent = new Intent(mController.mBluetooth.mBluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                    break;
+                case BLUETOOTH_NOT_SUPPORTED:
+                    // display message
+                    break;
+                default:
+                    // exit , should not come here
+                    break;
+            }
         }
+    }
+
+    public void enableBluetooth(){
+
     }
   /*  public void startBluetooth() {
 
