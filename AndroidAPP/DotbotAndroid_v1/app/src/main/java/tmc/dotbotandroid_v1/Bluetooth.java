@@ -54,6 +54,7 @@ public class Bluetooth {
     // bluetooth has been enabled.
     // returns errorcode which describes what might have gone wrong
     public returnCodes start() {
+
         queryPairedDevices();
         discoverNewDevices();
 

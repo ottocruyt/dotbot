@@ -11,9 +11,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import java.text.DecimalFormat;
-
-
 import android.view.WindowManager;
+import android.widget.Toast;
 
 public class GUI extends AppCompatActivity {
 
@@ -108,27 +107,71 @@ public class GUI extends AppCompatActivity {
             //closeBluetooth();
         }
         else{
-            connectButton.setText("Disconnect");
-            mController.mCache.connectButtonPressed = true;
+
+            //CharSequence toastReturnCodeBluetoothEnable="No return code! (Enable)";
+            CharSequence toastReturnCodeBluetoothConnection="No return code! (Connection)";
 
 
-            Bluetooth.returnCodes retVal = mController.enableBluetooth();
+            Bluetooth.returnCodes retVal_enable = mController.enableBluetooth();
 
-            switch(retVal) {
+            switch(retVal_enable) {
                 case BLUETOOTH_ENABLED:
+                    //toastReturnCodeBluetoothEnable="Bluetooth Enabled!";
                     break;
                 case BLUETOOTH_NOT_ENABLED:
                     // ask user to enable bluetooth
                     Intent enableBtIntent = new Intent(mController.mBluetooth.mBluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                    //toastReturnCodeBluetoothEnable="Bluetooth NOT Enabled!";
                     break;
                 case BLUETOOTH_NOT_SUPPORTED:
-                    // display message
+                    //toastReturnCodeBluetoothEnable="Bluetooth NOT supported!";
                     break;
                 default:
                     // exit , should not come here
                     break;
             }
+            //Toast toast_enable = Toast.makeText(this, toastReturnCodeBluetoothEnable, Toast.LENGTH_SHORT);
+            //toast_enable.show();
+
+            Bluetooth.returnCodes retVal_start = mController.startBluetooth();
+
+            switch(retVal_start) {
+                case BLUETOOTH_SUCCEEDED:
+                    toastReturnCodeBluetoothConnection="Bluetooth Succeeded!";
+                    break;
+                case BLUETOOTH_CREATION_ERROR:
+                    // ask user to enable bluetooth
+                    Intent enableBtIntent = new Intent(mController.mBluetooth.mBluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                    toastReturnCodeBluetoothConnection="Bluetooth Creation Error, enabling Bluetooth!";
+                    break;
+                case BLUETOOTH_CONNECTION_ERROR:
+                    toastReturnCodeBluetoothConnection="Bluetooth Connection Error!";
+                    break;
+                case BLUETOOTH_CLOSE_ERROR:
+                    toastReturnCodeBluetoothConnection="Bluetooth Close Error!";
+                    break;
+                case BLUETOOTH_OUTPUT_STREAM_ERROR:
+                    toastReturnCodeBluetoothConnection="Bluetooth Output Stream Error!";
+                    break;
+                default:
+                    // exit , should not come here
+                    break;
+            }
+
+
+            Toast toast = Toast.makeText(this, toastReturnCodeBluetoothConnection, Toast.LENGTH_SHORT);
+            toast.show();
+
+            if (retVal_start == Bluetooth.returnCodes.BLUETOOTH_SUCCEEDED) {
+                connectButton.setText("Disconnect");
+                mController.mCache.connectButtonPressed = true;
+            } else {
+                connectButton.setText("Connect");
+                mController.mCache.connectButtonPressed = false;
+            }
+
         }
     }
 }
