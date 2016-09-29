@@ -35,7 +35,8 @@ public class Bluetooth {
         BLUETOOTH_SEND_ERROR,
         BLUETOOTH_CLOSE_ERROR,
         BLUETOOTH_CREATION_ERROR,
-        BLUETOOTH_OUTPUT_STREAM_ERROR
+        BLUETOOTH_OUTPUT_STREAM_ERROR,
+        BLUETOOTH_CLOSED
     }
 
     Bluetooth(Context context) {
@@ -71,6 +72,13 @@ public class Bluetooth {
         return returnCodes.BLUETOOTH_SUCCEEDED;
     }
 
+    public returnCodes disable() {
+        returnCodes retVal = destroy();
+        return retVal;
+    }
+
+
+
     // This function attempts to create and enable the bluetooth adapter.
     // returns errorcode which describes what might have gone wrong
     public returnCodes enable() {
@@ -104,11 +112,19 @@ public class Bluetooth {
         return returnCodes.BLUETOOTH_SUCCEEDED;
     }
 
-    public void destroy() {
-        if (mBluetoothAdapter != null) {
-            mBluetoothAdapter.cancelDiscovery();
+    public returnCodes destroy() {
+        try {
+            if (mBluetoothAdapter != null) {
+                mBluetoothAdapter.cancelDiscovery();
+            }
+            mContext.unregisterReceiver(mReceiver);
+            mSocket.close();
+
+        } catch (IOException ex) {
+            Log.e("Bluetooth", "Unable to close" + ex.toString());
+            return returnCodes.BLUETOOTH_CLOSE_ERROR;
         }
-        mContext.unregisterReceiver(mReceiver);
+        return returnCodes.BLUETOOTH_CLOSED;
     }
 
     private void queryPairedDevices(){
@@ -124,12 +140,12 @@ public class Bluetooth {
     // This function will discover new devices
     // returns void
     private void discoverNewDevices(){
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothDevice.ACTION_FOUND);
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        //IntentFilter filter = new IntentFilter();
+        //filter.addAction(BluetoothDevice.ACTION_FOUND);
+        //filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        //filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
-        mContext.registerReceiver(mReceiver, filter);
+        //mContext.registerReceiver(mReceiver, filter);
         mBluetoothAdapter.startDiscovery(); // Starts the discovery process
 
         // Loop which makes sure the code will only continue once the discovery process is finished
@@ -166,16 +182,14 @@ public class Bluetooth {
             mSocket.connect();
         } catch (IOException ex) {
             Log.e("Bluetooth", "Unable to connect: " + ex.toString());
-            return returnCodes.BLUETOOTH_CONNECTION_ERROR;
-            // Unable to connect due to faillure or timeout; close the socket and get out
-        } finally {
-            // finally is normally used to deal with cleanup, catch is used to deal with unexpected errors
             try {
                 mSocket.close();
-            } catch (IOException ex) {
-                Log.e("Bluetooth", "Unable to close: " + ex.toString());
+            } catch (IOException ex2) {
+                Log.e("Bluetooth", "Unable to close: " + ex2.toString());
                 return returnCodes.BLUETOOTH_CLOSE_ERROR;
             }
+            return returnCodes.BLUETOOTH_CONNECTION_ERROR;
+            // Unable to connect due to faillure or timeout; close the socket and get out
         }
         try {
             mOutput = mSocket.getOutputStream();

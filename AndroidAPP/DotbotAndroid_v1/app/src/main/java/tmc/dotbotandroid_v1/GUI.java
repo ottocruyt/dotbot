@@ -41,16 +41,16 @@ public class GUI extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-      /* do what you need to do */
-            refreshGUI(mController.mCache.motorLeft, mController.mCache.motorRight, mController.mCache.power, mController.mCache.steering);
-      /* and here comes the "trick" */
-            mHandler.postDelayed(this, 100);
-        }
-    };
-    mHandler.post(runnable);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+          /* do what you need to do */
+                refreshGUI(mController.mCache.motorLeft, mController.mCache.motorRight, mController.mCache.power, mController.mCache.steering);
+          /* and here comes the "trick" */
+                mHandler.postDelayed(this, 100);
+            }
+        };
+        mHandler.post(runnable);
 
     }
 
@@ -102,16 +102,15 @@ public class GUI extends AppCompatActivity {
 
         // Change of appearance when the connect button is pressed
         if (mController.mCache.connectButtonPressed){
+
+            Bluetooth.returnCodes retVal_disable = mController.disableBluetooth();
             connectButton.setText("Connect");
             mController.mCache.connectButtonPressed = false;
-            //closeBluetooth();
         }
         else{
 
             //CharSequence toastReturnCodeBluetoothEnable="No return code! (Enable)";
             CharSequence toastReturnCodeBluetoothConnection="No return code! (Connection)";
-
-
             Bluetooth.returnCodes retVal_enable = mController.enableBluetooth();
 
             switch(retVal_enable) {
@@ -122,7 +121,7 @@ public class GUI extends AppCompatActivity {
                     // ask user to enable bluetooth
                     Intent enableBtIntent = new Intent(mController.mBluetooth.mBluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-                    //toastReturnCodeBluetoothEnable="Bluetooth NOT Enabled!";
+                    //toastReturnCodeBluetoothEnable="Bluetooth was NOT Enabled! Bluetooth is enabled automatically";
                     break;
                 case BLUETOOTH_NOT_SUPPORTED:
                     //toastReturnCodeBluetoothEnable="Bluetooth NOT supported!";

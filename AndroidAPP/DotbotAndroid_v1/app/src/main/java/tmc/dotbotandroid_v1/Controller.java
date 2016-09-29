@@ -73,6 +73,9 @@ public class Controller extends Thread implements SensorEventListener  {
     public Bluetooth.returnCodes startBluetooth(){
         return mBluetooth.start();
     }
+    public Bluetooth.returnCodes disableBluetooth(){
+        return mBluetooth.disable();
+    }
 
 
     public void Pause(){
