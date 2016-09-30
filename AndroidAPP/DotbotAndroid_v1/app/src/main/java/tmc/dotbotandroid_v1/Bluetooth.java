@@ -98,7 +98,7 @@ public class Bluetooth {
     // This function will attempt to send data to the bluetooth device. Calling this function requirs
     // initializing, calling init(), the bluetooth device.
     // returns errorcode which describes what might have gone wrong
-    public returnCodes sendData(char motorLeft, char motorRight) {
+    public returnCodes sendData(int motorLeft, int motorRight) {
         //ints can be 4 bytes, possible overflow
         byte[] msgBytes = new byte[2];
         msgBytes[0] = (byte)motorLeft;

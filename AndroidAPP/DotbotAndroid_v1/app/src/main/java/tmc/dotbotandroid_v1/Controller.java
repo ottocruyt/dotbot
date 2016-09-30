@@ -59,10 +59,10 @@ public class Controller extends Thread implements SensorEventListener  {
                 // The new values need to be displayed in the GUI
                 //refreshGUI(result[0], result[1], result[2], result[3]);
 
-                //  if (bluetoothIsConnected){
-                //    sendData(result[0], result[1]);
+                  if (mCache.bluetoothConnected){
+                    mBluetooth.sendData(mCache.motorLeft, mCache.motorRight);
 
-                // }
+                  }
             }
         }
     }

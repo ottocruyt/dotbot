@@ -11,5 +11,6 @@ public class Cache {
 
     public boolean startButtonPressed = false;
     public boolean connectButtonPressed = false;
+    public boolean bluetoothConnected = false;
 
 }

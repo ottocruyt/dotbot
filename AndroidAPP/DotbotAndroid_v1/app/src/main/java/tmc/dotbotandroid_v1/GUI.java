@@ -99,18 +99,29 @@ public class GUI extends AppCompatActivity {
 
         // Button object initialization
         Button connectButton = (Button) findViewById(R.id.button2);
+        CharSequence toastReturnCodeBluetoothConnection="No return code! (Connection)";
 
         // Change of appearance when the connect button is pressed
         if (mController.mCache.connectButtonPressed){
 
+
             Bluetooth.returnCodes retVal_disable = mController.disableBluetooth();
-            connectButton.setText("Connect");
-            mController.mCache.connectButtonPressed = false;
+
+            switch(retVal_disable) {
+                case BLUETOOTH_CLOSED:
+                    mController.mCache.bluetoothConnected = false;
+                    connectButton.setText("Connect");
+                    mController.mCache.connectButtonPressed = false;
+                    toastReturnCodeBluetoothConnection = "Bluetooth Closed!";
+                    break;
+                case BLUETOOTH_CLOSE_ERROR:
+                    toastReturnCodeBluetoothConnection = "Bluetooth Closing Error!";
+                    break;
+            }
         }
         else{
 
             //CharSequence toastReturnCodeBluetoothEnable="No return code! (Enable)";
-            CharSequence toastReturnCodeBluetoothConnection="No return code! (Connection)";
             Bluetooth.returnCodes retVal_enable = mController.enableBluetooth();
 
             switch(retVal_enable) {
@@ -138,6 +149,7 @@ public class GUI extends AppCompatActivity {
             switch(retVal_start) {
                 case BLUETOOTH_SUCCEEDED:
                     toastReturnCodeBluetoothConnection="Bluetooth Succeeded!";
+                    mController.mCache.bluetoothConnected = true;
                     break;
                 case BLUETOOTH_CREATION_ERROR:
                     // ask user to enable bluetooth
