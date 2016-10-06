@@ -99,15 +99,16 @@ public class GUI extends AppCompatActivity {
 
         // Button object initialization
         Button connectButton = (Button) findViewById(R.id.button2);
+        Bluetooth.returnCodes retVal;
         CharSequence toastReturnCodeBluetoothConnection="No return code! (Connection)";
 
         // Change of appearance when the connect button is pressed
         if (mController.mCache.connectButtonPressed){
 
 
-            Bluetooth.returnCodes retVal_disable = mController.disableBluetooth();
+            retVal = mController.disableBluetooth();
 
-            switch(retVal_disable) {
+            switch(retVal) {
                 case BLUETOOTH_CLOSED:
                     mController.mCache.bluetoothConnected = false;
                     connectButton.setText("Connect");
@@ -117,7 +118,11 @@ public class GUI extends AppCompatActivity {
                 case BLUETOOTH_CLOSE_ERROR:
                     toastReturnCodeBluetoothConnection = "Bluetooth Closing Error!";
                     break;
+                default:
+                    // exit , should not come here
+                    break;
             }
+
         }
         else{
 
@@ -144,9 +149,9 @@ public class GUI extends AppCompatActivity {
             //Toast toast_enable = Toast.makeText(this, toastReturnCodeBluetoothEnable, Toast.LENGTH_SHORT);
             //toast_enable.show();
 
-            Bluetooth.returnCodes retVal_start = mController.startBluetooth();
+            retVal = mController.startBluetooth();
 
-            switch(retVal_start) {
+            switch(retVal) {
                 case BLUETOOTH_SUCCEEDED:
                     toastReturnCodeBluetoothConnection="Bluetooth Succeeded!";
                     mController.mCache.bluetoothConnected = true;
@@ -172,17 +177,18 @@ public class GUI extends AppCompatActivity {
             }
 
 
-            Toast toast = Toast.makeText(this, toastReturnCodeBluetoothConnection, Toast.LENGTH_SHORT);
-            toast.show();
 
-            if (retVal_start == Bluetooth.returnCodes.BLUETOOTH_SUCCEEDED) {
-                connectButton.setText("Disconnect");
-                mController.mCache.connectButtonPressed = true;
-            } else {
-                connectButton.setText("Connect");
-                mController.mCache.connectButtonPressed = false;
-            }
 
         }
+       Toast toast = Toast.makeText(this, toastReturnCodeBluetoothConnection, Toast.LENGTH_SHORT);
+       toast.show();
+
+       if (retVal == Bluetooth.returnCodes.BLUETOOTH_SUCCEEDED || retVal == Bluetooth.returnCodes.BLUETOOTH_CLOSE_ERROR) {
+           connectButton.setText("Disconnect");
+           mController.mCache.connectButtonPressed = true;
+       } else {
+           connectButton.setText("Connect");
+           mController.mCache.connectButtonPressed = false;
+       }
     }
 }

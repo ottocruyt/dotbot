@@ -72,13 +72,6 @@ public class Bluetooth {
         return returnCodes.BLUETOOTH_SUCCEEDED;
     }
 
-    public returnCodes disable() {
-        returnCodes retVal = destroy();
-        return retVal;
-    }
-
-
-
     // This function attempts to create and enable the bluetooth adapter.
     // returns errorcode which describes what might have gone wrong
     public returnCodes enable() {
@@ -118,6 +111,20 @@ public class Bluetooth {
                 mBluetoothAdapter.cancelDiscovery();
             }
             mContext.unregisterReceiver(mReceiver);
+            mSocket.close();
+
+        } catch (IOException ex) {
+            Log.e("Bluetooth", "Unable to close" + ex.toString());
+            return returnCodes.BLUETOOTH_CLOSE_ERROR;
+        }
+        return returnCodes.BLUETOOTH_CLOSED;
+    }
+
+    public returnCodes disable() {
+        try {
+            if (mBluetoothAdapter != null) {
+                mBluetoothAdapter.cancelDiscovery();
+            }
             mSocket.close();
 
         } catch (IOException ex) {
