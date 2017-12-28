@@ -1,0 +1,1 @@
+dotbot is an android app that allows controlling of a 3-wheeled robot with your smartphone and a bluetooth connection. Based on the Udemy nanomouse, but ported to android. The dotbot is running a controller on a arduino nano that receives the commands.
